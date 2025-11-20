@@ -1,1 +1,507 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Planning Portfolio - For Her</title>
+    
+    <!-- React & ReactDOM --><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel --><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons --><script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Google Fonts --><link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: #fffafa; /* Light Rose White */
+            color: #4a4a68; /* Deep Plum */
+        }
+        h1, h2, h3 {
+            font-family: 'Shippori Mincho B1', serif;
+        }
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fdf2f8; /* Light Pink Track */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbcfe8; /* Pink Thumb */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f472b6; /* Deeper Pink Hover */
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Lucide Icons component wrapper
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
+
+        // Data: Projects
+        const projects = [
+            {
+                id: 1,
+                title: "ライフスタイル家電 「Bloom Aura」",
+                category: "ハードウェア / IoT",
+                image: "https://placehold.co/600x400/ffe4e6/fbcfe8?text=Bloom+Aura+Device",
+                summary: "気分や好みに合わせて香りと光を演出するスマートディフューザー。",
+                challenge: "既存のアロマディフューザーは機能が限定的で、若年層への訴求力不足。",
+                solution: "AIによるユーザーの行動パターン学習と、有名ブランドとのコラボ香水・光パターン連携。",
+                result: "発売3ヶ月で5万台販売。SNSでのシェア率が前年比200%増を達成。",
+                tags: ["企画立案", "ブランディング", "製造管理"]
+            },
+            {
+                id: 2,
+                title: "美容SaaS 「Glow Up Studio」",
+                category: "Webサービス / SaaS",
+                image: "https://placehold.co/600x400/e0e7ff/c7d2fe?text=GlowUp+Studio+Dashboard",
+                summary: "美容サロン向け予約・顧客管理オールインワンシステム。",
+                challenge: "手作業による予約管理の煩雑さ、顧客データの散逸。",
+                solution: "AIによる顧客の来店履歴・好み分析機能と、スタッフのシフト自動調整機能。",
+                result: "導入サロン数300店突破。予約管理工数を50%削減し、顧客満足度95%を達成。",
+                tags: ["要件定義", "UI/UX改善", "アジャイル開発"]
+            },
+            {
+                id: 3,
+                title: "フェムテックアプリ 「Luna Sync」",
+                category: "新規事業 / アプリ",
+                image: "https://placehold.co/600x400/f0e0f5/d8b4fe?text=Luna+Sync+App",
+                summary: "女性の心身の健康をサポートする生理周期管理＆ヘルスケアアプリ。",
+                challenge: "生理周期管理アプリの機能が限定的で、総合的なヘルスケアサポートが不足。",
+                solution: "パーソナライズされた栄養・運動アドバイスと、専門医によるオンライン相談機能の導入。",
+                result: "ダウンロード数100万件突破。ユーザー継続率（Retention Rate）を30%向上。",
+                tags: ["市場調査", "データ分析", "コミュニティ運営"]
+            }
+        ];
+
+        // Data: Skills
+        const skills = [
+            { name: "Market Research", level: 90, icon: "search" },
+            { name: "Data Analysis (SQL/Python)", level: 75, icon: "bar-chart-2" },
+            { name: "UI/UX Design (Figma)", level: 80, icon: "pen-tool" },
+            { name: "Project Management", level: 85, icon: "users" },
+            { name: "Branding & Marketing", level: 70, icon: "megaphone" },
+            { name: "Communication", level: 88, icon: "message-circle" },
+        ];
+
+        // Component: Header
+        const Header = () => {
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const navLinks = [
+                { name: 'About', href: '#about' },
+                { name: 'Process', href: '#process' },
+                { name: 'Portfolio', href: '#portfolio' },
+                { name: 'Contact', href: '#contact' },
+            ];
+
+            return (
+                <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
+                    <div className="container mx-auto px-6 flex justify-between items-center">
+                        <a href="#" className="text-2xl font-bold tracking-tighter text-pink-600 flex items-center gap-2">
+                            <span className="bg-pink-500 text-white p-1 rounded-md"><Icon name="sparkles" size={20} /></span>
+                            DESIGNING.
+                        </a>
+
+                        {/* Desktop Nav */}
+                        <nav className="hidden md:flex space-x-8">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} className="text-gray-600 hover:text-pink-600 font-medium transition-colors">
+                                    {link.name}
+                                </a>
+                            ))}
+                        </nav>
+
+                        {/* Mobile Menu Button */}
+                        <button className="md:hidden text-gray-800" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                            <Icon name={isMenuOpen ? "x" : "menu"} />
+                        </button>
+                    </div>
+
+                    {/* Mobile Nav */}
+                    {isMenuOpen && (
+                        <div className="md:hidden bg-white absolute top-full left-0 w-full shadow-md py-4 px-6 flex flex-col space-y-4">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} className="text-gray-600 hover:text-pink-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                                    {link.name}
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                </header>
+            );
+        };
+
+        // Component: Hero
+        const Hero = () => {
+            return (
+                <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden">
+                    <div className="container mx-auto px-6 relative z-10">
+                        <div className="max-w-3xl mx-auto text-center fade-in" style={{animationDelay: '0.1s'}}>
+                            <h2 className="text-pink-600 font-semibold tracking-wide uppercase mb-4">Product Planner Portfolio</h2>
+                            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                                心ときめく体験を、<br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">かたちにする</span>。
+                            </h1>
+                            <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed">
+                                ユーザーの潜在的なニーズを深く理解し、<br className="hidden md:block"/>
+                                美しく、そして機能的なプロダクトへと昇華させます。
+                            </p>
+                            <div className="flex flex-col sm:flex-row justify-center gap-4">
+                                <a href="#portfolio" className="px-8 py-4 bg-pink-500 text-white rounded-full font-semibold hover:bg-pink-600 transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                                    実績を見る <Icon name="flower-2" size={18} />
+                                </a>
+                                <a href="#contact" className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-full font-semibold hover:bg-gray-50 transition shadow-sm flex items-center justify-center gap-2">
+                                    お問い合わせ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Decorative Elements (Soft, Watercolor-like) */}
+                    <div className="absolute top-20 left-10 w-64 h-64 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+                    <div className="absolute bottom-20 right-10 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{animationDelay: '2s'}}></div>
+                </section>
+            );
+        };
+
+        // Component: About & Skills
+        const About = () => {
+            return (
+                <section id="about" className="py-20 bg-white">
+                    <div className="container mx-auto px-6">
+                        <div className="flex flex-col md:flex-row gap-16 items-center">
+                            
+                            {/* Profile Text */}
+                            <div className="md:w-1/2">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                                    <span className="text-pink-600">About Me</span>
+                                </h2>
+                                <h3 className="text-xl font-medium text-gray-800 mb-4">
+                                    鈴木 花子 / Hanako Suzuki
+                                </h3>
+                                <p className="text-gray-600 mb-6 leading-relaxed">
+                                    大学卒業後、化粧品メーカーで商品企画を担当。その後、ITベンチャーにて女性向けWebサービスやアプリのプロダクトマネージャーとして、企画からグロースまで一貫して携わってきました。
+                                    <br /><br />
+                                    ユーザーが「思わず手に取りたくなる」「使い続けたくなる」プロダクト開発を目指しています。データに基づいた論理的思考と、感情に訴えかけるデザイン思考を融合させ、市場に新しい価値を創造することが私の喜びです。
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                    <div className="p-4 bg-pink-50 rounded-lg">
+                                        <p className="text-sm text-pink-500">Experience</p>
+                                        <p className="text-lg font-bold text-gray-800">7+ Years</p>
+                                    </div>
+                                    <div className="p-4 bg-pink-50 rounded-lg">
+                                        <p className="text-sm text-pink-500">Launched</p>
+                                        <p className="text-lg font-bold text-gray-800">10+ Products</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Skills Grid */}
+                            <div className="md:w-1/2 w-full">
+                                <h3 className="text-xl font-bold text-gray-900 mb-6">Core Skills</h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {skills.map((skill, index) => (
+                                        <div key={index} className="flex items-center p-4 border border-pink-100 rounded-xl shadow-sm hover:shadow-md transition bg-white">
+                                            <div className="p-3 bg-purple-50 text-purple-600 rounded-lg mr-4">
+                                                <Icon name={skill.icon} size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-gray-800">{skill.name}</p>
+                                                <div className="w-full bg-purple-100 rounded-full h-1.5 mt-2 w-24">
+                                                    <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: `${skill.level}%` }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Component: Process
+        const Process = () => {
+            const steps = [
+                { number: "01", title: "Empathize", desc: "ユーザーの声に耳を傾け、隠れたニーズや感情を深く理解します。", icon: "heart" },
+                { number: "02", title: "Ideate", desc: "多様な視点からアイデアを出し、最高のユーザー体験を創造します。", icon: "sparkles" },
+                { number: "03", title: "Prototype", desc: "高速なプロトタイピングとテストで、アイデアを具体的な形にします。", icon: "palette" },
+                { number: "04", title: "Launch & Grow", desc: "ローンチ後も改善を続け、プロダクトを愛され続ける存在へと育てます。", icon: "leaf" }
+            ];
+
+            return (
+                <section id="process" className="py-20 bg-purple-900 text-white">
+                    <div className="container mx-auto px-6">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4">Planning Journey</h2>
+                            <p className="text-purple-200 max-w-2xl mx-auto">
+                                ユーザー中心のデザイン思考で、企画から成長まで一貫して伴走します。
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                            {/* Connecting Line (Desktop only) */}
+                            <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-purple-700 -z-0"></div>
+
+                            {steps.map((step, index) => (
+                                <div key={index} className="relative z-10 flex flex-col items-center text-center group">
+                                    <div className="w-24 h-24 bg-purple-800 border-2 border-pink-400 rounded-full flex items-center justify-center mb-6 shadow-lg group-hover:bg-pink-500 transition duration-300">
+                                        <Icon name={step.icon} size={32} className="text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                                    <p className="text-purple-200 text-sm leading-relaxed px-2">
+                                        {step.desc}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Component: Portfolio Card
+        const ProjectCard = ({ project }) => {
+            return (
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-pink-100 flex flex-col h-full">
+                    <div className="relative h-56 overflow-hidden group">
+                        <img 
+                            src={project.image} 
+                            alt={project.title} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-gray-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                            {project.category}
+                        </div>
+                    </div>
+                    
+                    <div className="p-6 flex flex-col flex-grow">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-2">{project.title}</h3>
+                        <p className="text-gray-600 text-sm mb-6">{project.summary}</p>
+                        
+                        <div className="space-y-4 mb-6 flex-grow">
+                            <div>
+                                <div className="text-xs uppercase tracking-wider text-pink-600 font-bold mb-1 flex items-center gap-1">
+                                    <Icon name="message-square" size={14} /> 課題
+                                </div>
+                                <p className="text-sm text-gray-700 bg-pink-50 p-3 rounded-lg">{project.challenge}</p>
+                            </div>
+                            <div>
+                                <div className="text-xs uppercase tracking-wider text-green-600 font-bold mb-1 flex items-center gap-1">
+                                    <Icon name="lightbulb" size={14} /> ソリューション
+                                </div>
+                                <p className="text-sm text-gray-700 bg-green-50 p-3 rounded-lg">{project.solution}</p>
+                            </div>
+                            <div>
+                                <div className="text-xs uppercase tracking-wider text-purple-600 font-bold mb-1 flex items-center gap-1">
+                                    <Icon name="award" size={14} /> 成果
+                                </div>
+                                <p className="text-sm text-gray-800 font-medium border-l-4 border-purple-500 pl-3">{project.result}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                            {project.tags.map((tag, i) => (
+                                <span key={i} className="text-xs font-medium bg-purple-100 text-purple-600 px-2 py-1 rounded-md">
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: Portfolio Grid
+        const Portfolio = () => {
+            return (
+                <section id="portfolio" className="py-20 bg-pink-50">
+                    <div className="container mx-auto px-6">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">My Creations</h2>
+                            <p className="text-gray-600">
+                                ユーザーの笑顔のために心を込めて企画したプロダクトたちです。
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {projects.map(project => (
+                                <ProjectCard key={project.id} project={project} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Component: Contact
+        const Contact = () => {
+            const [formState, setFormState] = useState('idle'); // idle, submitting, success
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setFormState('submitting');
+                // Simulate API call
+                setTimeout(() => {
+                    setFormState('success');
+                }, 1500);
+            };
+
+            return (
+                <section id="contact" className="py-20 bg-white">
+                    <div className="container mx-auto px-6 max-w-4xl">
+                        <div className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-3xl p-8 md:p-16 shadow-2xl text-white flex flex-col md:flex-row gap-12 overflow-hidden relative">
+                            {/* Decorative elements */}
+                            <div className="absolute -top-20 -right-20 w-48 h-48 bg-white/10 rounded-full mix-blend-overlay"></div>
+                            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full mix-blend-overlay"></div>
+
+                            <div className="md:w-1/2 relative z-10">
+                                <h2 className="text-3xl font-bold mb-4">Feel free to connect.</h2>
+                                <p className="text-white/80 mb-8 leading-relaxed">
+                                    新しいプロジェクトのご相談や、キャリアに関するお話など、<br/>
+                                    どんなことでもお気軽にお問い合わせください。
+                                </p>
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 text-white/90">
+                                        <Icon name="mail" size={20} />
+                                        <span>hanako@example.com</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-white/90">
+                                        <Icon name="map-pin" size={20} />
+                                        <span>Tokyo, Japan</span>
+                                    </div>
+                                    <div className="flex gap-4 mt-6">
+                                        <a href="#" className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition"><Icon name="linkedin" size={20} /></a>
+                                        <a href="#" className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition"><Icon name="twitter" size={20} /></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="md:w-1/2 relative z-10">
+                                {formState === 'success' ? (
+                                    <div className="h-full flex flex-col items-center justify-center text-center p-6 bg-white text-gray-800 rounded-xl animate-fade-in">
+                                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                                            <Icon name="check" size={32} />
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-2">ありがとうございます！</h3>
+                                        <p className="text-gray-600">お問い合わせ内容を確認後、<br/>改めてご連絡させていただきます。</p>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-white/90 mb-1">お名前</label>
+                                            <input required type="text" className="w-full px-4 py-3 rounded-lg bg-white/10 border border-purple-300 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50" placeholder="鈴木 花子" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-white/90 mb-1">メールアドレス</label>
+                                            <input required type="email" className="w-full px-4 py-3 rounded-lg bg-white/10 border border-purple-300 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50" placeholder="your@email.com" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-white/90 mb-1">メッセージ</label>
+                                            <textarea required rows="4" className="w-full px-4 py-3 rounded-lg bg-white/10 border border-purple-300 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50" placeholder="お問い合わせ内容をご記入ください"></textarea>
+                                        </div>
+                                        <button disabled={formState === 'submitting'} type="submit" className="w-full bg-white text-pink-600 font-bold py-3 rounded-lg hover:bg-pink-50 transition transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                                            {formState === 'submitting' ? (
+                                                <>
+                                                    <span className="w-4 h-4 border-2 border-pink-600 border-t-transparent rounded-full animate-spin"></span>
+                                                    送信中...
+                                                </>
+                                            ) : (
+                                                <>送信する <Icon name="send" size={18} /></>
+                                            )}
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Component: Footer
+        const Footer = () => {
+            return (
+                <footer className="bg-purple-900 text-purple-200 py-8 text-center border-t border-purple-800">
+                    <div className="container mx-auto px-6">
+                        <p className="text-sm">
+                            &copy; {new Date().getFullYear()} Hanako Suzuki. All rights reserved.
+                        </p>
+                        <p className="text-xs mt-2">
+                            Designed with Love & Passion.
+                        </p>
+                    </div>
+                </footer>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="antialiased">
+                    <Header />
+                    <main>
+                        <Hero />
+                        <About />
+                        <Process />
+                        <Portfolio />
+                        <Contact />
+                    </main>
+                    <Footer />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
